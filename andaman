@@ -1,0 +1,20 @@
+#!/bin/bash
+
+start() {
+ffmpeg -nostdin  -loglevel quiet \
+	-f v4l2 -framerate 20 \
+	-i /dev/video0 \
+	-f v4l2 /dev/video10 & 
+}
+
+
+stop() {
+	kill $(ps ax | grep /dev/ | grep Sl | cut -d "p" -f 1)
+}
+
+if [ $1 == "-s" ]
+then
+	start
+else
+	stop
+fi

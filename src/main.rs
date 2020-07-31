@@ -1,17 +1,57 @@
-use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
-use actix_web_static_files;
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use std::process::Command;
 
-use std::collections::HashMap;
+async fn greet() -> impl Responder {
+    let html = "
+     <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='UTF-8'>
+    <title>Andaman Effect</title>
+    <script>
+        class State {
+          constructor(){
+            this.camera = false;
+           }
+          get_camera(){
+            this.set_camera();
+            return this.camera;
+          }
+          run(){
+            fetch('/' +this.get_camera())
+               .catch(console.log(error));
+          }
+          set_camera(){
+            this.camera = !this.camera;
+          }
+         }
 
-include!(concat!(env!("OUT_DIR"), "/generated.rs"));
-
-async fn greet(req: HttpRequest) -> impl Responder {
-    let css = "<input type='submit'>";
-    HttpResponse::Ok().content_type("text/html").body(css)
+        let state = new State();
+    </script>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+        button {
+            display: inline-block;
+            width: 80%;
+            height: 90vh;
+            background-color: red;
+            font-size: 5rem;
+        }
+    </style>
+    </head>
+    <body>
+        <button onclick='state.run()'>Toggle Camera</button>
+    </body>
+</html>
+        ";
+    HttpResponse::Ok().content_type("text/html").body(html)
 }
 
-async fn start(req: HttpRequest) -> impl Responder {
+async fn start() -> impl Responder {
     Command::new("andaman")
         .args(&["-s"])
         .spawn()
@@ -19,7 +59,7 @@ async fn start(req: HttpRequest) -> impl Responder {
     HttpResponse::Ok()
 }
 
-async fn stop(req: HttpRequest) -> impl Responder {
+async fn stop() -> impl Responder {
     Command::new("andaman").output().expect("failed to stop");
     HttpResponse::Ok()
 }
@@ -28,14 +68,11 @@ async fn stop(req: HttpRequest) -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(actix_web_static_files::ResourceFiles::new(
-                "/static", generated,
-            ))
             .route("/", web::get().to(greet))
             .route("/true", web::get().to(start))
             .route("/false", web::get().to(stop))
     })
-    .bind("127.0.0.1:8000")?
+    .bind("0.0.0.0:8000")?
     .run()
     .await
 }

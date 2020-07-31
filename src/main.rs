@@ -1,5 +1,10 @@
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web_static_files;
 use std::process::Command;
+
+use std::collections::HashMap;
+
+include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 async fn greet(req: HttpRequest) -> impl Responder {
     let css = "<input type='submit'>";
@@ -23,6 +28,9 @@ async fn stop(req: HttpRequest) -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
+            .service(actix_web_static_files::ResourceFiles::new(
+                "/static", generated,
+            ))
             .route("/", web::get().to(greet))
             .route("/true", web::get().to(start))
             .route("/false", web::get().to(stop))

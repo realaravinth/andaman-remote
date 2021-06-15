@@ -83,6 +83,14 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(greet))
             .route("/true", web::get().to(start))
             .route("/false", web::get().to(stop))
+            .wrap(
+                actix_cors::Cors::new()
+                    .send_wildcard()
+                    .allowed_methods(vec!["GET", "POST"])
+                    .max_age(3600)
+                    .send_wildcard()
+                    .finish(),
+            )
     })
     .bind("0.0.0.0:5000")?
     .run()

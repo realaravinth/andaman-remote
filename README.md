@@ -20,3 +20,11 @@ And you should be good to go
 # Launch
 The server binds itself to port `8000` and can be launched with
 `./adman-remote`
+
+## Notes:
+In case of problem:
+
+```bash
+➜  ~ sudo modprobe -r v4l2loopback
+➜  ~ sudo modprobe v4l2loopback video_nr=7 card_label="USB Cam"  exclusive_caps=1
+```

@@ -48,13 +48,17 @@ async fn greet() -> impl Responder {
             display: inline-block;
             width: 80%;
             height: 30vh;
-            background-color: red;
+            background-color: white;
+            border: 1px solid black;
             font-size: 5rem;
+        }
+        button:hover {
+            background: yellow;
+            cursor: grab;
         }
     </style>
     </head>
     <body>
-        <button onclick='state.toggle_loop()'>Toggle Loop</button>
        <button onclick='state.run()'>Toggle Camera</button>
     </body>
 </html>
